@@ -22,7 +22,7 @@ defmodule Day1 do
 
   def solution_1(elf_backpacks) do
     elf_backpacks
-    |> Enum.map(&Enum.sum/1)
+    |> Stream.map(&Enum.sum/1)
     |> Enum.max()
   end
 

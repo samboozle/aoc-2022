@@ -1,3 +1,4 @@
+use crate::helpers::desc;
 use std::cmp::max;
 use std::fs;
 
@@ -37,12 +38,12 @@ pub fn solution_2(elf_backpacks: &Backpacks) -> u32 {
                 3 => {
                     let least = acc.pop().unwrap();
                     acc.push(max(calories, least));
-                    acc.sort_by(|a, b| b.cmp(a));
+                    acc.sort_by(desc);
                     acc
                 }
                 _ => {
                     acc.push(calories);
-                    acc.sort_by(|a, b| b.cmp(a));
+                    acc.sort_by(desc);
                     acc
                 }
             }
