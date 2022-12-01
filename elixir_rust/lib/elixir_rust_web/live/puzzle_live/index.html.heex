@@ -1,0 +1,43 @@
+<h1>Listing Puzzles</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.puzzle_index_path(@socket, :index)}>
+    <.live_component
+      module={ElixirRustWeb.PuzzleLive.FormComponent}
+      id={@puzzle.id || :new}
+      title={@page_title}
+      action={@live_action}
+      puzzle={@puzzle}
+      return_to={Routes.puzzle_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Day</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="puzzles">
+    <%= for puzzle <- @puzzles do %>
+      <tr id={"puzzle-#{puzzle.id}"}>
+        <td><%= puzzle.title %></td>
+        <td><%= puzzle.description %></td>
+        <td><%= puzzle.day %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.puzzle_show_path(@socket, :show, puzzle) %></span>
+          <span><%= live_patch "Edit", to: Routes.puzzle_index_path(@socket, :edit, puzzle) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: puzzle.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Puzzle", to: Routes.puzzle_index_path(@socket, :new) %></span>

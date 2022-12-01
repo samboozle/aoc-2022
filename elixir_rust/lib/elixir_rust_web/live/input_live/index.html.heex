@@ -1,0 +1,41 @@
+<h1>Listing Inputs</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.input_index_path(@socket, :index)}>
+    <.live_component
+      module={ElixirRustWeb.InputLive.FormComponent}
+      id={@input.id || :new}
+      title={@page_title}
+      action={@live_action}
+      input={@input}
+      return_to={Routes.input_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Content</th>
+      <th>Expected resulti</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="inputs">
+    <%= for input <- @inputs do %>
+      <tr id={"input-#{input.id}"}>
+        <td><%= input.content %></td>
+        <td><%= input.expected_resulti %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.input_show_path(@socket, :show, input) %></span>
+          <span><%= live_patch "Edit", to: Routes.input_index_path(@socket, :edit, input) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: input.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Input", to: Routes.input_index_path(@socket, :new) %></span>

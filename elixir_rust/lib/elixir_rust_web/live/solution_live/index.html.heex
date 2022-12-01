@@ -1,0 +1,41 @@
+<h1>Listing Solutions</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.solution_index_path(@socket, :index)}>
+    <.live_component
+      module={ElixirRustWeb.SolutionLive.FormComponent}
+      id={@solution.id || :new}
+      title={@page_title}
+      action={@live_action}
+      solution={@solution}
+      return_to={Routes.solution_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Language</th>
+      <th>Code</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="solutions">
+    <%= for solution <- @solutions do %>
+      <tr id={"solution-#{solution.id}"}>
+        <td><%= solution.language %></td>
+        <td><%= solution.code %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.solution_show_path(@socket, :show, solution) %></span>
+          <span><%= live_patch "Edit", to: Routes.solution_index_path(@socket, :edit, solution) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: solution.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Solution", to: Routes.solution_index_path(@socket, :new) %></span>
