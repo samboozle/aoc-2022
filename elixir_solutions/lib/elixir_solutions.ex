@@ -1,18 +1,12 @@
 defmodule ElixirSolutions do
-  @moduledoc """
-  Documentation for `ElixirSolutions`.
-  """
+  @days %{
+    1 => Day1
+  }
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> ElixirSolutions.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def solve(day) do
+    case @days[day] do
+      nil -> {:error, "No module for day #{day} found"}
+      mod -> {:ok, mod.run()}
+    end
   end
 end

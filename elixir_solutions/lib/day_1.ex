@@ -1,4 +1,10 @@
 defmodule Day1 do
+  def run do
+    elf_backpacks = parse_input("assets/d1p1.txt")
+
+    {solution_1(elf_backpacks), solution_2(elf_backpacks)}
+  end
+
   def parse_input(path) do
     File.read!(path)
     |> String.split("\n\n")
@@ -12,12 +18,6 @@ defmodule Day1 do
       end)
       |> Enum.reverse()
     end)
-  end
-
-  def run do
-    elf_backpacks = parse_input("assets/d1p1.txt")
-
-    {solution_1(elf_backpacks), solution_2(elf_backpacks)}
   end
 
   def solution_1(elf_backpacks) do
