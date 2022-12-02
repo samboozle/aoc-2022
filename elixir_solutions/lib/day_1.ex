@@ -1,6 +1,6 @@
 defmodule Day1 do
-  def run do
-    elf_backpacks = parse_input("assets/d1p1.txt")
+  def run(path \\ "assets/d1full.txt") do
+    elf_backpacks = parse_input(path)
 
     {solution_1(elf_backpacks), solution_2(elf_backpacks)}
   end
