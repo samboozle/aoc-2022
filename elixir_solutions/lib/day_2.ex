@@ -1,11 +1,11 @@
 defmodule Day2 do
   @moves %{
-    :A => :rock,
-    :B => :paper,
-    :C => :scissors,
-    :X => :rock,
-    :Y => :paper,
-    :Z => :scissors
+    A: :rock,
+    B: :paper,
+    C: :scissors,
+    X: :rock,
+    Y: :paper,
+    Z: :scissors
   }
 
   @outcomes %{
