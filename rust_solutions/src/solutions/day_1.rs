@@ -61,16 +61,21 @@ pub fn run(path: &str) -> Result<(u32, u32), std::io::Error> {
     Ok((answer_1, answer_2))
 }
 
-#[test]
-fn test_small_input_solution_1() {
-    let backpacks = parse_input("assets/d1t1.txt").unwrap();
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    assert_eq!(solution_1(&backpacks), 24_000);
-}
+    fn backpacks() -> Backpacks {
+        parse_input("assets/d1test.txt").unwrap()
+    }
 
-#[test]
-fn test_small_input_solution_2() {
-    let backpacks = parse_input("assets/d1t1.txt").unwrap();
+    #[test]
+    fn test_small_input_solution_1() {
+        assert_eq!(solution_1(&backpacks()), 24_000);
+    }
 
-    assert_eq!(solution_2(&backpacks), 45_000);
+    #[test]
+    fn test_small_input_solution_2() {
+        assert_eq!(solution_2(&backpacks()), 45_000);
+    }
 }
