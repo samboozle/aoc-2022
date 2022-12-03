@@ -96,7 +96,7 @@ impl PartialOrd for Move {
 }
 
 #[derive(PartialEq, Eq)]
-pub struct Frame(Signal, Signal);
+struct Frame(Signal, Signal);
 
 impl Frame {
     fn to_find_outcome(&self) -> Turn {
@@ -132,7 +132,7 @@ impl Turn {
     }
 }
 
-pub fn parse_input(path: &str) -> Result<Vec<Frame>, std::io::Error> {
+fn parse_input(path: &str) -> Result<Vec<Frame>, std::io::Error> {
     let s = fs::read_to_string(path)?;
 
     let turns = s.split("\n").into_iter().fold(vec![], |mut acc, line| {
@@ -154,14 +154,14 @@ pub fn parse_input(path: &str) -> Result<Vec<Frame>, std::io::Error> {
     Ok(turns)
 }
 
-pub fn solution_1(turns: &Vec<Frame>) -> u32 {
+fn solution_1(turns: &Vec<Frame>) -> u32 {
     turns.into_iter().fold(0, |acc, frame| {
         let (outcome, r#move) = frame.to_find_outcome().play();
         acc + (outcome as u32) + (r#move as u32)
     })
 }
 
-pub fn solution_2(turns: &Vec<Frame>) -> u32 {
+fn solution_2(turns: &Vec<Frame>) -> u32 {
     turns.into_iter().fold(0, |acc, frame| {
         let (outcome, r#move) = frame.to_find_move().play();
         acc + (outcome as u32) + (r#move as u32)

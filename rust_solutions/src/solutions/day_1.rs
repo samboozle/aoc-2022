@@ -4,7 +4,7 @@ use std::fs;
 
 type Backpacks = Vec<Vec<u32>>;
 
-pub fn parse_input(path: &str) -> Result<Backpacks, std::io::Error> {
+fn parse_input(path: &str) -> Result<Backpacks, std::io::Error> {
     let s = fs::read_to_string(path)?;
 
     let backpacks = s
@@ -20,14 +20,14 @@ pub fn parse_input(path: &str) -> Result<Backpacks, std::io::Error> {
     Ok(backpacks)
 }
 
-pub fn solution_1(elf_backpacks: &Backpacks) -> u32 {
+fn solution_1(elf_backpacks: &Backpacks) -> u32 {
     elf_backpacks.into_iter().fold(0, |max_calories, backpack| {
         let calories: u32 = backpack.into_iter().sum();
         max(calories, max_calories)
     })
 }
 
-pub fn solution_2(elf_backpacks: &Backpacks) -> u32 {
+fn solution_2(elf_backpacks: &Backpacks) -> u32 {
     elf_backpacks
         .into_iter()
         .fold(Vec::new(), |mut acc, backpack| -> Vec<u32> {

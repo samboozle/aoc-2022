@@ -3,9 +3,20 @@ mod solutions;
 use solutions::*;
 
 fn main() {
-    let day_1_result = day_1::run("assets/d1full.txt");
-    let day_2_result = day_2::run("assets/d2full.txt");
-
-    println!("Day 1 answers: {:?}", day_1_result);
-    println!("Day 2 answers: {:?}", day_2_result);
+    [day_1::run, day_2::run]
+        .iter()
+        .enumerate()
+        .for_each(
+            |(i, f)| match f(format!("assets/d{}full.txt", i + 1).as_str()) {
+                Ok((sol1, sol2)) => {
+                    println!(
+                        "Day {} solutions:\n    Part 1: {}\n    Part 2: {}\n",
+                        i + 1,
+                        sol1,
+                        sol2
+                    );
+                }
+                _ => (),
+            },
+        );
 }
