@@ -77,11 +77,11 @@ mod tests {
 
     #[test]
     fn test_small_input_solution_1() {
-        assert_eq!(solution_1(&rucksacks()), 24_000);
+        assert_eq!(solution_1(&rucksacks()), 157);
     }
 
     #[test]
     fn test_small_input_solution_2() {
-        assert_eq!(solution_2(&rucksacks()), 45_000);
+        assert_eq!(solution_2(&rucksacks()), 70);
     }
 }
