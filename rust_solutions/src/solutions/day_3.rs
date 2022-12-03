@@ -49,7 +49,13 @@ fn solution_2(rucksacks: &Rucksacks) -> u32 {
             three
                 .into_iter()
                 .map(|s| HashSet::from_iter(s.chars()))
-                .reduce(|acc: HashSet<char>, set| acc.intersection(&set).cloned().collect())
+                // Original intersection reduce requires cloning
+                // .reduce(|acc: HashSet<char>, set| acc.intersection(&set).cloned().collect())
+                .reduce(|mut acc, set: HashSet<char>| {
+                    // Does not require cloning
+                    acc.retain(|c| set.contains(c));
+                    acc
+                })
                 .unwrap()
                 .drain()
                 .next()
