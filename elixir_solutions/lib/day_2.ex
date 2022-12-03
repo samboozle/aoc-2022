@@ -36,7 +36,7 @@ defmodule Day2 do
 
   def parse_input(path) do
     File.read!(path)
-    |> String.split("\n")
+    |> String.split("\n", trim: true)
     |> Enum.reduce([], fn line, acc ->
       case String.split(line, ~r"\s+") |> Enum.map(&String.to_atom/1) do
         [a, b] -> [{a, b} | acc]

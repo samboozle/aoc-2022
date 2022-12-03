@@ -9,13 +9,8 @@ defmodule Day1 do
     File.read!(path)
     |> String.split("\n\n")
     |> Enum.map(fn line ->
-      String.split(line, "\n")
-      |> Enum.reduce([], fn s, acc ->
-        case s do
-          "" -> acc
-          _ -> [String.to_integer(s) | acc]
-        end
-      end)
+      String.split(line, "\n", trim: true)
+      |> Enum.reduce([], &[String.to_integer(&1) | &2])
       |> Enum.reverse()
     end)
   end
