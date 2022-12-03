@@ -20,14 +20,14 @@ fn parse_input(path: &str) -> Result<Backpacks, std::io::Error> {
     Ok(backpacks)
 }
 
-fn solution_1(elf_backpacks: &Backpacks) -> u32 {
+pub fn solution_1(elf_backpacks: &Backpacks) -> u32 {
     elf_backpacks.into_iter().fold(0, |max_calories, backpack| {
         let calories: u32 = backpack.into_iter().sum();
         max(calories, max_calories)
     })
 }
 
-fn solution_2(elf_backpacks: &Backpacks) -> u32 {
+pub fn solution_2(elf_backpacks: &Backpacks) -> u32 {
     elf_backpacks
         .into_iter()
         .fold(Vec::new(), |mut acc, backpack| -> Vec<u32> {

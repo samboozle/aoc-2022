@@ -3,7 +3,7 @@ mod solutions;
 use solutions::*;
 
 fn main() {
-    [day_1::run, day_2::run]
+    [day_1::run, day_2::run, day_3::run]
         .iter()
         .enumerate()
         .for_each(
