@@ -42,8 +42,7 @@ defmodule Day3 do
   end
 
   defp find_dupe(list) do
-    list
-    |> Enum.split(div(length(list), 2))
+    Enum.split(list, div(length(list), 2))
     |> (fn {front, back} ->
           pool = MapSet.new(front)
           Enum.find(back, &MapSet.member?(pool, &1))
