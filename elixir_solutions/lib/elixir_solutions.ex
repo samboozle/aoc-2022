@@ -1,7 +1,9 @@
 defmodule ElixirSolutions do
   @days %{
     1 => Day1,
-    2 => Day2
+    2 => Day2,
+    3 => Day3,
+    4 => Day4
   }
 
   def solve(day) do
