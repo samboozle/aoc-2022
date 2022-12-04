@@ -13,7 +13,7 @@ fn parse_input(path: &str) -> Result<RangePairs, std::io::Error> {
     let rangepairs = s
         .split_whitespace()
         .into_iter()
-        .fold(vec![], |mut acc, pair| {
+        .filter_map(|pair| {
             match pair
                 .split(",")
                 .filter_map(|range| {
@@ -22,19 +22,21 @@ fn parse_input(path: &str) -> Result<RangePairs, std::io::Error> {
                         .map(|n| n.parse::<u32>())
                         .collect::<Vec<Result<u32, _>>>()[..]
                     {
-                        [Ok(lo), Ok(hi)] => Some((lo, hi)),
+                        [Ok(lo), Ok(hi)] => match lo.cmp(&hi) {
+                            // JIC - reverse any range written such that lo > hi
+                            Greater => Some((hi, lo)),
+                            _ => Some((lo, hi)),
+                        },
                         _ => None,
                     }
                 })
                 .collect::<Vec<(u32, u32)>>()[..]
             {
-                [a, b] => {
-                    acc.push((a, b));
-                    acc
-                }
-                _ => acc,
+                [a, b] => Some((a, b)),
+                _ => None,
             }
-        });
+        })
+        .collect();
 
     Ok(rangepairs)
 }
