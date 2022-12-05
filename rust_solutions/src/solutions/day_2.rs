@@ -184,17 +184,31 @@ pub fn run(path: &str) -> Result<(String, String), ParseError> {
 mod tests {
     use super::*;
 
-    fn frames() -> Vec<Frame> {
+    fn small_frames() -> Vec<Frame> {
         parse_input("assets/d2test.txt").unwrap()
+    }
+
+    fn large_frames() -> Vec<Frame> {
+        parse_input("assets/d2full.txt").unwrap()
     }
 
     #[test]
     fn test_small_input_solution_1() {
-        assert_eq!(solution_1(&frames()), 15);
+        assert_eq!(solution_1(&small_frames()), 15);
     }
 
     #[test]
     fn test_small_input_solution_2() {
-        assert_eq!(solution_2(&frames()), 12);
+        assert_eq!(solution_2(&small_frames()), 12);
+    }
+
+    #[test]
+    fn test_large_input_solution_1() {
+        assert_eq!(solution_1(&large_frames()), 17_189);
+    }
+
+    #[test]
+    fn test_large_input_solution_2() {
+        assert_eq!(solution_2(&large_frames()), 13_490);
     }
 }

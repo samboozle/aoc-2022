@@ -75,17 +75,31 @@ pub fn run(path: &str) -> Result<(String, String), ParseError> {
 mod tests {
     use super::*;
 
-    fn rangepairs() -> RangePairs {
+    fn small_rangepairs() -> RangePairs {
         parse_input("assets/d4test.txt").unwrap()
+    }
+
+    fn large_rangepairs() -> RangePairs {
+        parse_input("assets/d4full.txt").unwrap()
     }
 
     #[test]
     fn test_small_input_solution_1() {
-        assert_eq!(solution_1(&rangepairs()), 2);
+        assert_eq!(solution_1(&small_rangepairs()), 2);
     }
 
     #[test]
     fn test_small_input_solution_2() {
-        assert_eq!(solution_2(&rangepairs()), 4);
+        assert_eq!(solution_2(&small_rangepairs()), 4);
+    }
+
+    #[test]
+    fn test_large_input_solution_1() {
+        assert_eq!(solution_1(&large_rangepairs()), 431);
+    }
+
+    #[test]
+    fn test_large_input_solution_2() {
+        assert_eq!(solution_2(&large_rangepairs()), 823);
     }
 }

@@ -82,17 +82,31 @@ pub fn run(path: &str) -> Result<(String, String), ParseError> {
 mod tests {
     use super::*;
 
-    fn rucksacks() -> Rucksacks {
+    fn small_rucksacks() -> Rucksacks {
         parse_input("assets/d3test.txt").unwrap()
+    }
+
+    fn large_rucksacks() -> Rucksacks {
+        parse_input("assets/d3full.txt").unwrap()
     }
 
     #[test]
     fn test_small_input_solution_1() {
-        assert_eq!(solution_1(&rucksacks()), 157);
+        assert_eq!(solution_1(&small_rucksacks()), 157);
     }
 
     #[test]
     fn test_small_input_solution_2() {
-        assert_eq!(solution_2(&rucksacks()), 70);
+        assert_eq!(solution_2(&small_rucksacks()), 70);
+    }
+
+    #[test]
+    fn test_large_input_solution_1() {
+        assert_eq!(solution_1(&large_rucksacks()), 7_581);
+    }
+
+    #[test]
+    fn test_large_input_solution_2() {
+        assert_eq!(solution_2(&large_rucksacks()), 2_525);
     }
 }
