@@ -3,20 +3,24 @@ use std::fs;
 use std::hash::Hash;
 use std::iter::FromIterator;
 
+use crate::util::ParseError::{self, ReadError};
+
 type Rucksacks = Vec<String>;
 
-fn parse_input(path: &str) -> Result<Rucksacks, std::io::Error> {
-    let s = fs::read_to_string(path)?;
+fn parse_input(path: &str) -> Result<Rucksacks, ParseError> {
+    if let Ok(s) = fs::read_to_string(path) {
+        let rucksacks = s
+            .split_whitespace()
+            .into_iter()
+            .fold(vec![], |mut acc, sack| {
+                acc.push(sack.to_owned());
+                acc
+            });
 
-    let rucksacks = s
-        .split_whitespace()
-        .into_iter()
-        .fold(vec![], |mut acc, sack| {
-            acc.push(sack.to_owned());
-            acc
-        });
-
-    Ok(rucksacks)
+        Ok(rucksacks)
+    } else {
+        Err(ReadError)
+    }
 }
 
 fn priority(c: char) -> u32 {
@@ -65,13 +69,13 @@ fn mut_intersection<T: Eq + Hash>(mut a: HashSet<T>, b: HashSet<T>) -> HashSet<T
     a
 }
 
-pub fn run(path: &str) -> Result<(u32, u32), std::io::Error> {
+pub fn run(path: &str) -> Result<(String, String), ParseError> {
     let rucksacks = parse_input(path)?;
 
     let answer_1 = solution_1(&rucksacks);
     let answer_2 = solution_2(&rucksacks);
 
-    Ok((answer_1, answer_2))
+    Ok((answer_1.to_string(), answer_2.to_string()))
 }
 
 #[cfg(test)]

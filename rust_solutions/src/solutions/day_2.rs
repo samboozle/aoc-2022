@@ -1,3 +1,4 @@
+use crate::util::ParseError::{self, ReadError};
 use std::cmp::Ordering;
 use std::fs;
 use std::str::FromStr;
@@ -132,26 +133,28 @@ impl Turn {
     }
 }
 
-fn parse_input(path: &str) -> Result<Vec<Frame>, std::io::Error> {
-    let s = fs::read_to_string(path)?;
+fn parse_input(path: &str) -> Result<Vec<Frame>, ParseError> {
+    if let Ok(s) = fs::read_to_string(path) {
+        let turns = s.split("\n").into_iter().fold(vec![], |mut acc, line| {
+            match line
+                .split_whitespace()
+                .filter_map(|move_str| match Signal::from_str(move_str) {
+                    Ok(sig) => Some(sig),
+                    _ => None,
+                })
+                .collect::<Vec<Signal>>()[..]
+            {
+                [a, b] => acc.push(Frame(a, b)),
+                _ => (),
+            };
 
-    let turns = s.split("\n").into_iter().fold(vec![], |mut acc, line| {
-        match line
-            .split_whitespace()
-            .filter_map(|move_str| match Signal::from_str(move_str) {
-                Ok(sig) => Some(sig),
-                _ => None,
-            })
-            .collect::<Vec<Signal>>()[..]
-        {
-            [a, b] => acc.push(Frame(a, b)),
-            _ => (),
-        };
+            acc
+        });
 
-        acc
-    });
-
-    Ok(turns)
+        Ok(turns)
+    } else {
+        Err(ReadError)
+    }
 }
 
 fn solution_1(turns: &Vec<Frame>) -> u32 {
@@ -168,13 +171,13 @@ fn solution_2(turns: &Vec<Frame>) -> u32 {
     })
 }
 
-pub fn run(path: &str) -> Result<(u32, u32), std::io::Error> {
+pub fn run(path: &str) -> Result<(String, String), ParseError> {
     let frames = parse_input(path)?;
 
     let answer_1 = solution_1(&frames);
     let answer_2 = solution_2(&frames);
 
-    Ok((answer_1, answer_2))
+    Ok((answer_1.to_string(), answer_2.to_string()))
 }
 
 #[cfg(test)]
