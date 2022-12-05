@@ -41,18 +41,17 @@ defmodule Day5 do
 
   def solution_1(crates, instructions) do
     Enum.reduce(instructions, crates, &move_crates/2)
-    |> Enum.sort_by(fn {k, _} -> k end, :desc)
-    |> Enum.reduce([], fn {_, [h | _]}, acc -> [h | acc] end)
-    |> Enum.join()
+    |> map_heads()
   end
 
   def solution_2(crates, instructions) do
-    nil
+    Enum.reduce(instructions, crates, &move_piles/2)
+    |> map_heads()
   end
 
-  def move_crates([0, _, _], crates), do: crates
+  defp move_crates([0, _, _], crates), do: crates
 
-  def move_crates([amount, from, to], crates) do
+  defp move_crates([amount, from, to], crates) do
     {head_at, crates} =
       Map.get_and_update(crates, from, fn
         [] -> {nil, []}
@@ -62,5 +61,24 @@ defmodule Day5 do
     crates = Map.update(crates, to, [head_at], fn stack -> [head_at | stack] end)
 
     move_crates([amount - 1, from, to], crates)
+  end
+
+  defp move_piles([amount, from, to], crates) do
+    {pile_at, crates} = Map.get_and_update(crates, from, &seq_take(&1, amount))
+
+    Map.update(crates, to, pile_at, fn stack ->
+      Enum.reduce(pile_at, stack, fn el, acc -> [el | acc] end)
+    end)
+  end
+
+  defp seq_take(list, count, acc \\ [])
+  defp seq_take([], _, acc), do: {acc, []}
+  defp seq_take(list, 0, acc), do: {acc, list}
+  defp seq_take([head | tail], count, acc), do: seq_take(tail, count - 1, [head | acc])
+
+  defp map_heads(crates) do
+    Enum.sort_by(crates, fn {k, _} -> k end, :desc)
+    |> Enum.reduce([], fn {_, [h | _]}, acc -> [h | acc] end)
+    |> Enum.join()
   end
 end
