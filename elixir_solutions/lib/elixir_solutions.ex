@@ -13,4 +13,6 @@ defmodule ElixirSolutions do
       mod -> {:ok, mod.run()}
     end
   end
+
+  def solutions, do: for(day <- 1..25, do: solve(day))
 end
