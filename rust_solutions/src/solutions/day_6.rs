@@ -58,6 +58,7 @@ fn first_unique_window_sized_mut(input: &String, size: usize) -> u32 {
         i += 1;
 
         if counter.len() == size {
+            // assert!(counter.iter().all(|(_, v)| *v == 1));
             break;
         }
     }
