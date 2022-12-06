@@ -1,5 +1,5 @@
 use crate::util::ParseError::{self, ReadError};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 
 fn parse_input(path: &str) -> Result<String, ParseError> {
@@ -11,27 +11,58 @@ fn parse_input(path: &str) -> Result<String, ParseError> {
 }
 
 fn solution_1(input: &String) -> u32 {
-    let mut i = 4;
-    for window in input.chars().collect::<Vec<char>>().as_slice().windows(4) {
-        match HashSet::<&char>::from_iter(window.iter()).len() {
-            4 => break,
-            _ => (),
-        }
-        i += 1;
-    }
-    i
+    first_unique_window_sized_mut(input, 4)
 }
 
 fn solution_2(input: &String) -> u32 {
-    let mut i = 14;
-    for window in input.chars().collect::<Vec<char>>().as_slice().windows(14) {
+    first_unique_window_sized_mut(input, 14)
+}
+
+// My original implementation; find the first window of `size` width (e.g., 4)
+// where all elements are unique
+fn _first_unique_window_sized(input: &String, size: usize) -> u32 {
+    type VC = Vec<char>; // give this type a short name so rustfmt chills :)
+    let mut i = size;
+    for window in input.chars().collect::<VC>().as_slice().windows(size) {
         match HashSet::<&char>::from_iter(window.iter()).len() {
-            14 => break,
+            x if x == size => break,
             _ => (),
         }
         i += 1;
     }
-    i
+    i as u32
+}
+
+// My second implementation; use a hashmap to track the counts of all characters
+// within a window of width `size`. When the window reaches `size` entries in length,
+// terminate. Not sure if it's significantly better, but tracking the windowed char set globally
+// rather than per-window seems more efficient..
+fn first_unique_window_sized_mut(input: &String, size: usize) -> u32 {
+    let indexible = input.chars().collect::<Vec<char>>();
+    let mut counter = HashMap::new();
+    let mut i = 0;
+
+    loop {
+        *counter.entry(indexible[i]).or_insert(0) += 1;
+
+        if size <= i {
+            let exited = indexible[i - size];
+
+            counter.entry(exited).and_modify(|e| *e -= 1);
+
+            if let Some(0) = counter.get(&exited) {
+                counter.remove(&exited);
+            }
+        }
+
+        i += 1;
+
+        if counter.len() == size {
+            break;
+        }
+    }
+
+    i as u32
 }
 
 pub fn run(path: &str) -> Result<(String, String), ParseError> {
