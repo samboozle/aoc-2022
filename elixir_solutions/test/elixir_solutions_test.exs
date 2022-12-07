@@ -23,6 +23,10 @@ defmodule ElixirSolutionsTest do
   end
 
   test "Day 6" do
-    assert ElixirSolutions.solve(6) == {:ok, {1929, 3298}}
+    assert ElixirSolutions.solve(6) == {:ok, {1_929, 3_298}}
+  end
+
+  test "Day 7" do
+    assert ElixirSolutions.solve(7) == {:ok, {1_490_523, 3_298}}
   end
 end
