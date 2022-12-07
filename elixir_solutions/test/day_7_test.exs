@@ -13,6 +13,6 @@ defmodule Day7Test do
   test "Solution 2 with small input" do
     assert Day7.parse_input(@test_input)
            |> Day7.solution_2()
-           |> (&(&1 == 4)).()
+           |> (&(&1 == 24_933_642)).()
   end
 end

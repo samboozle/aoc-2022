@@ -1,5 +1,7 @@
 defmodule Day7 do
   @sized_file ~r/(\d+) (\S+)/
+  @disk_size 70_000_000
+  @update_size 30_000_000
 
   def run(path \\ "assets/d7full.txt") do
     dir = parse_input(path)
@@ -16,26 +18,29 @@ defmodule Day7 do
 
   def solution_1(dir) do
     Map.values(dir)
-    |> Enum.reduce({0, 0, 100_000}, &count_and_size/2)
+    |> Enum.reduce({[], 0, 100_000}, &count_and_size/2)
     |> elem(0)
+    |> Enum.sum()
   end
 
   def solution_2(dir) do
     Map.values(dir)
-    |> Enum.reduce({0, 0, 100_000}, &count_and_size/2)
-    |> elem(0)
+    |> Enum.reduce({[], 0, nil}, &count_and_size/2)
+    |> (fn {dirs, size, _} ->
+          Stream.filter(dirs, &(&1 + @disk_size - size >= @update_size))
+        end).()
+    |> Enum.min()
   end
 
-  defp count_and_size(node, {count, size, limit}) when is_number(node) do
-    {count, size + node, limit}
-  end
+  defp count_and_size(node, {count, size, limit}) when is_number(node),
+    do: {count, size + node, limit}
 
   defp count_and_size(node, {count, size, limit}) when is_map(node) do
     {count, local_size, limit} =
       Enum.reduce(Map.values(node), {count, 0, limit}, &count_and_size/2)
 
     cond do
-      local_size <= limit -> {count + local_size, size + local_size, limit}
+      local_size <= limit -> {[local_size | count], size + local_size, limit}
       :otherwise -> {count, size + local_size, limit}
     end
   end
