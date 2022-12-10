@@ -22,9 +22,13 @@ fn main() {
         |(day, fun)| match fun(format!("assets/d{}full.txt", day + 1).as_str()) {
             Ok((sol1, sol2)) => {
                 println!(
-                    "\nDay {} solutions:\n    Part 1: {}\n    Part 2: \n{}\n",
+                    "\nDay {} solutions:\n    Part 1: {}\n    Part 2: {}{}\n",
                     day + 1,
                     sol1,
+                    match day {
+                        9 => "below...\n\n",
+                        _ => "",
+                    },
                     sol2
                 );
             }

@@ -56,19 +56,19 @@ fn solution_2(signals: &Vec<Signal>) -> Vec<String> {
             |(mut crt, reg, cyc), signal| {
                 let (lo, hi) = (reg - 1, reg + 1);
 
-                let mut push = |offset: usize| match (cyc + offset).rem(40) as i32 {
+                let mut write_crt = |offset: usize| match (cyc + offset).rem(40) as i32 {
                     x if x >= lo && x <= hi => crt[(cyc + offset) / 40].push('#'),
                     _ => crt[(cyc + offset) / 40].push('.'),
                 };
 
                 match (signal, cyc) {
                     (Noop, 0..=239) => {
-                        push(0);
+                        write_crt(0);
                         (crt, reg, cyc + 1)
                     }
                     (Add(val), 0..=239) => {
-                        push(0);
-                        push(1);
+                        write_crt(0);
+                        write_crt(1);
                         (crt, reg as i32 + val, cyc + 2)
                     }
                     _ => (crt, reg, cyc),
