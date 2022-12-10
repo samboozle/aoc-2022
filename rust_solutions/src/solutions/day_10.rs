@@ -66,7 +66,7 @@ fn solution_2(signals: &Vec<Signal>) -> Vec<String> {
                         write_crt(0);
                         (crt, reg, cyc + 1)
                     }
-                    (Add(val), 0..=239) => {
+                    (Add(val), 0..=238) => {
                         write_crt(0);
                         write_crt(1);
                         (crt, reg as i32 + val, cyc + 2)
