@@ -158,15 +158,19 @@ fn parse_input(path: &str) -> Result<Vec<Frame>, ParseError> {
 }
 
 fn solution_1(turns: &Vec<Frame>) -> u32 {
-    turns.into_iter().fold(0, |acc, frame| {
-        let (outcome, r#move) = frame.to_find_outcome().play();
-        acc + (outcome as u32) + (r#move as u32)
-    })
+    cheat_at_rps(turns, |frame| frame.to_find_outcome())
 }
 
 fn solution_2(turns: &Vec<Frame>) -> u32 {
+    cheat_at_rps(turns, |frame| frame.to_find_move())
+}
+
+fn cheat_at_rps<F>(turns: &Vec<Frame>, f: F) -> u32
+where
+    F: Fn(&Frame) -> Turn,
+{
     turns.into_iter().fold(0, |acc, frame| {
-        let (outcome, r#move) = frame.to_find_move().play();
+        let (outcome, r#move) = f(frame).play();
         acc + (outcome as u32) + (r#move as u32)
     })
 }
