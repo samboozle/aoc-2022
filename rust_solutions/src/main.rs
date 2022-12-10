@@ -5,15 +5,16 @@ use solutions::*;
 
 fn main() {
     [
-        day_1::run,
-        day_2::run,
-        day_3::run,
-        day_4::run,
-        day_5::run,
-        day_6::run,
-        day_7::run,
-        day_8::run,
-        day_9::run,
+        day_01::run,
+        day_02::run,
+        day_03::run,
+        day_04::run,
+        day_05::run,
+        day_06::run,
+        day_07::run,
+        day_08::run,
+        day_09::run,
+        day_10::run,
     ]
     .iter()
     .enumerate()
@@ -21,7 +22,7 @@ fn main() {
         |(day, fun)| match fun(format!("assets/d{}full.txt", day + 1).as_str()) {
             Ok((sol1, sol2)) => {
                 println!(
-                    "\nDay {} solutions:\n    Part 1: {}\n    Part 2: {}\n",
+                    "\nDay {} solutions:\n    Part 1: {}\n    Part 2: \n{}\n",
                     day + 1,
                     sol1,
                     sol2
