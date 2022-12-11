@@ -1,4 +1,5 @@
 use crate::util::ParseError::{self, ReadError};
+use std::collections::VecDeque;
 use std::fs;
 use std::ops::Rem;
 
@@ -37,7 +38,6 @@ use Operation::*;
 
 #[derive(Debug, Clone)]
 struct Monkey {
-    items: Vec<u64>,
     inspections: u64,
     operation: Operation,
     test: u64,
@@ -47,7 +47,6 @@ struct Monkey {
 impl Monkey {
     fn new() -> Self {
         Monkey {
-            items: vec![],
             inspections: 0,
             operation: Add(0),
             test: 1,
@@ -56,7 +55,8 @@ impl Monkey {
     }
 }
 
-type Barrel = Vec<Monkey>;
+type MonkeyItems = Vec<VecDeque<u64>>;
+type Barrel = (Vec<Monkey>, MonkeyItems);
 
 fn parse_input(path: &str) -> Result<Barrel, ParseError> {
     if let Ok(s) = fs::read_to_string(path) {
@@ -69,75 +69,82 @@ fn parse_input(path: &str) -> Result<Barrel, ParseError> {
                     .into_iter()
                     .skip(1)
                     .enumerate()
-                    .try_fold(Monkey::new(), |mut monkey, (idx, line)| match idx {
-                        0 => {
-                            for item in line.trim().splitn(3, ' ').last().unwrap().split(", ") {
-                                if let Ok(n) = item.parse::<u64>() {
-                                    monkey.items.push(n);
+                    .try_fold(
+                        (Monkey::new(), VecDeque::<u64>::new()),
+                        |(mut monkey, mut items), (idx, line)| match idx {
+                            0 => {
+                                for item in line.trim().splitn(3, ' ').last().unwrap().split(", ") {
+                                    if let Ok(n) = item.parse::<u64>() {
+                                        items.push_back(n);
+                                    }
+                                }
+                                Some((monkey, items))
+                            }
+                            1 => {
+                                match line
+                                    .trim()
+                                    .splitn(5, ' ')
+                                    .last()
+                                    .map(|op| Operation::from_str(op))
+                                {
+                                    Some(Some(op)) => {
+                                        monkey.operation = op;
+                                        Some((monkey, items))
+                                    }
+                                    _ => None,
                                 }
                             }
-                            Some(monkey)
-                        }
-                        1 => {
-                            match line
-                                .trim()
-                                .splitn(5, ' ')
-                                .last()
-                                .map(|op| Operation::from_str(op))
-                            {
-                                Some(Some(op)) => {
-                                    monkey.operation = op;
-                                    Some(monkey)
+                            2 => {
+                                match line
+                                    .trim()
+                                    .split_whitespace()
+                                    .last()
+                                    .map(|n| n.parse::<u64>())
+                                {
+                                    Some(Ok(n)) => {
+                                        monkey.test = n;
+                                        Some((monkey, items))
+                                    }
+                                    _ => None,
                                 }
-                                _ => None,
                             }
-                        }
-                        2 => {
-                            match line
-                                .trim()
-                                .split_whitespace()
-                                .last()
-                                .map(|n| n.parse::<u64>())
-                            {
-                                Some(Ok(n)) => {
-                                    monkey.test = n;
-                                    Some(monkey)
+                            3 => {
+                                match line
+                                    .trim()
+                                    .split_whitespace()
+                                    .last()
+                                    .map(|n| n.parse::<usize>())
+                                {
+                                    Some(Ok(n)) => {
+                                        monkey.targets.0 = n;
+                                        Some((monkey, items))
+                                    }
+                                    _ => None,
                                 }
-                                _ => None,
                             }
-                        }
-                        3 => {
-                            match line
-                                .trim()
-                                .split_whitespace()
-                                .last()
-                                .map(|n| n.parse::<usize>())
-                            {
-                                Some(Ok(n)) => {
-                                    monkey.targets.0 = n;
-                                    Some(monkey)
+                            4 => {
+                                match line
+                                    .trim()
+                                    .split_whitespace()
+                                    .last()
+                                    .map(|n| n.parse::<usize>())
+                                {
+                                    Some(Ok(n)) => {
+                                        monkey.targets.1 = n;
+                                        Some((monkey, items))
+                                    }
+                                    _ => None,
                                 }
-                                _ => None,
                             }
-                        }
-                        4 => {
-                            match line
-                                .trim()
-                                .split_whitespace()
-                                .last()
-                                .map(|n| n.parse::<usize>())
-                            {
-                                Some(Ok(n)) => {
-                                    monkey.targets.1 = n;
-                                    Some(monkey)
-                                }
-                                _ => None,
-                            }
-                        }
-                        _ => Some(monkey),
-                    })
+                            _ => Some((monkey, items)),
+                        },
+                    )
             })
-            .collect::<Barrel>();
+            .fold((vec![], vec![]), |mut barrel: Barrel, (monkey, items)| {
+                barrel.0.push(monkey);
+                barrel.1.push(items);
+                barrel
+            });
 
         Ok(barrel)
     } else {
@@ -145,18 +152,19 @@ fn parse_input(path: &str) -> Result<Barrel, ParseError> {
     }
 }
 
-fn simulate_monkey_business(mut barrel: Barrel, rounds: usize, throttle: u64) -> u64 {
-    let lcm = barrel.iter().fold(1, |acc, monkey| monkey.test * acc);
+fn simulate_monkey_business(
+    mut monkeys: Vec<Monkey>,
+    mut monkey_items: MonkeyItems,
+    rounds: usize,
+    throttle: u64,
+) -> u64 {
+    let lcm = monkeys.iter().fold(1, |acc, monkey| monkey.test * acc);
 
     for _ in 0..rounds {
-        for i in 0..barrel.len() {
-            let mut trues = vec![];
-            let mut falses = vec![];
-            let (t, f) = barrel[i].targets.clone();
-
+        for i in 0..monkeys.len() {
             {
-                let monkey = &mut barrel[i];
-                for worry in &monkey.items {
+                let monkey = &mut monkeys[i];
+                while let Some(worry) = monkey_items[i].pop_front() {
                     monkey.inspections += 1;
 
                     let new_worry = match monkey.operation {
@@ -168,43 +176,28 @@ fn simulate_monkey_business(mut barrel: Barrel, rounds: usize, throttle: u64) ->
                     };
 
                     match new_worry.rem(monkey.test) {
-                        0 => trues.push(new_worry),
-                        _ => falses.push(new_worry),
+                        0 => monkey_items[monkey.targets.0].push_back(new_worry),
+                        _ => monkey_items[monkey.targets.1].push_back(new_worry),
                     }
-                }
-                monkey.items.clear();
-            }
-
-            {
-                let monkey = &mut barrel[t];
-                for item in trues {
-                    monkey.items.push(item);
-                }
-            }
-
-            {
-                let monkey = &mut barrel[f];
-                for item in falses {
-                    monkey.items.push(item);
                 }
             }
         }
     }
 
-    barrel.sort_by(|monk_a, monk_b| monk_b.inspections.cmp(&monk_a.inspections));
+    monkeys.sort_by(|monk_a, monk_b| monk_b.inspections.cmp(&monk_a.inspections));
 
-    barrel
+    monkeys
         .iter()
         .take(2)
         .fold(1, |acc, monkey| acc * monkey.inspections)
 }
 
-fn solution_1(barrel: Barrel) -> u64 {
-    simulate_monkey_business(barrel, 20, 3)
+fn solution_1((monkeys, items): Barrel) -> u64 {
+    simulate_monkey_business(monkeys, items, 20, 3)
 }
 
-fn solution_2(barrel: Barrel) -> u64 {
-    simulate_monkey_business(barrel, 10_000, 1)
+fn solution_2((monkeys, items): Barrel) -> u64 {
+    simulate_monkey_business(monkeys, items, 10_000, 1)
 }
 
 pub fn run(path: &str) -> Result<(String, String), ParseError> {
