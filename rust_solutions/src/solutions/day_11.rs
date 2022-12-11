@@ -243,4 +243,9 @@ mod tests {
     fn test_small_input_solution_2() {
         assert_eq!(solution_2(small_monkeys()), 2_713_310_158);
     }
+
+    #[test]
+    fn test_large_input_solution_2() {
+        assert_eq!(solution_2(large_monkeys()), 24_389_045_529);
+    }
 }
