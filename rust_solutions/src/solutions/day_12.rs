@@ -132,21 +132,21 @@ mod tests {
         assert_eq!(solution_1(&height_map, start), 31);
     }
 
-    // #[test]
-    // fn test_large_input_solution_1() {
-    //     let (height_map, start, _) = large_maze();
-    //     assert_eq!(solution_1(&height_map, start), 440);
-    // }
-    //
-    // #[test]
-    // fn test_small_input_solution_2() {
-    //     let (height_map, _, end) = small_maze();
-    //     assert_eq!(solution_2(&height_map, end), 29);
-    // }
-    //
-    // #[test]
-    // fn test_large_input_solution_2() {
-    //     let (height_map, _, end) = large_maze();
-    //     assert_eq!(solution_2(&height_map, end), 439);
-    // }
+    #[test]
+    fn test_large_input_solution_1() {
+        let (height_map, start, _) = large_maze();
+        assert_eq!(solution_1(&height_map, start), 440);
+    }
+
+    #[test]
+    fn test_small_input_solution_2() {
+        let (height_map, _, end) = small_maze();
+        assert_eq!(solution_2(&height_map, end), 29);
+    }
+
+    #[test]
+    fn test_large_input_solution_2() {
+        let (height_map, _, end) = large_maze();
+        assert_eq!(solution_2(&height_map, end), 439);
+    }
 }
