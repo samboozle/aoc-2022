@@ -10,10 +10,9 @@ defmodule Day12Test do
            |> (&(&1 == 31)).()
   end
 
-  @tag :pending
   test "Solution 2 with small input" do
     assert Day12.parse_input(@test_input)
            |> Day12.solution_2()
-           |> (&(&1 == 2_713_310_158)).()
+           |> (&(&1 == 29)).()
   end
 end
