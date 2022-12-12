@@ -1,4 +1,4 @@
-defmodule Day8 do
+defmodule Day08 do
   def run(path \\ "assets/d8full.txt") do
     dir = parse_input(path)
     {solution_1(dir), solution_2(dir)}

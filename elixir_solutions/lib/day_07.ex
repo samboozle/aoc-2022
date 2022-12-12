@@ -1,4 +1,4 @@
-defmodule Day7 do
+defmodule Day07 do
   @sized_file ~r/(\d+) (\S+)/
   @disk_size 70_000_000
   @update_size 30_000_000

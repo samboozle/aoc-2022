@@ -1,4 +1,4 @@
-defmodule Day6 do
+defmodule Day06 do
   def run(path \\ "assets/d6full.txt") do
     line = parse_input(path)
     {solution_1(line), solution_2(line)}

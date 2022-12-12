@@ -1,4 +1,4 @@
-defmodule Day1 do
+defmodule Day01 do
   def run(path \\ "assets/d1full.txt") do
     elf_backpacks = parse_input(path)
 

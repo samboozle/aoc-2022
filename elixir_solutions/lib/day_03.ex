@@ -1,4 +1,4 @@
-defmodule Day3 do
+defmodule Day03 do
   def run(path \\ "assets/d3full.txt") do
     input = parse_input(path)
     {solution_1(input), solution_2(input)}

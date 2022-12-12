@@ -1,4 +1,4 @@
-defmodule Day5 do
+defmodule Day05 do
   @instruction ~r/move (\d+) from (\d+) to (\d+)/
 
   def run(path \\ "assets/d5full.txt") do

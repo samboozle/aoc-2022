@@ -1,11 +1,11 @@
-defmodule Day5Test do
+defmodule Day05Test do
   use ExUnit.Case
   doctest ElixirSolutions
 
   @test_input "assets/d5test.txt"
 
   test "parses input into [{{int, int}, {int, int}}]" do
-    {crates, instructions} = Day5.parse_input(@test_input)
+    {crates, instructions} = Day05.parse_input(@test_input)
 
     assert crates
            |> Enum.all?(fn
@@ -20,14 +20,14 @@ defmodule Day5Test do
   end
 
   test "Solution 1 with small input" do
-    assert Day5.parse_input(@test_input)
-           |> (fn {crates, instructions} -> Day5.solution_1(crates, instructions) end).()
+    assert Day05.parse_input(@test_input)
+           |> (fn {crates, instructions} -> Day05.solution_1(crates, instructions) end).()
            |> (&(&1 == "CMZ")).()
   end
 
   test "Solution 2 with small input" do
-    assert Day5.parse_input(@test_input)
-           |> (fn {crates, instructions} -> Day5.solution_2(crates, instructions) end).()
+    assert Day05.parse_input(@test_input)
+           |> (fn {crates, instructions} -> Day05.solution_2(crates, instructions) end).()
            |> (&(&1 == "MCD")).()
   end
 end

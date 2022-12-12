@@ -1,4 +1,4 @@
-defmodule Day2 do
+defmodule Day02 do
   @moves %{
     A: :rock,
     B: :paper,

@@ -1,4 +1,4 @@
-defmodule Day4 do
+defmodule Day04 do
   @row_regex ~r/(\d+)-(\d+),(\d+)-(\d+)/
 
   def run(path \\ "assets/d4full.txt") do
