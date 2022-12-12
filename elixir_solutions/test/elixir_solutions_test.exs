@@ -47,4 +47,9 @@ defmodule ElixirSolutionsTest do
   test "Day 11" do
     assert ElixirSolutions.solve(11) == {:ok, {56120, 24_389_045_529}}
   end
+
+  @tag :pending
+  test "Day 12" do
+    assert ElixirSolutions.solve(12) == {:ok, {440, 24_389_045_529}}
+  end
 end
