@@ -55,7 +55,6 @@ where
 {
     let mut to_visit = HashSet::from([start]);
     let mut visited = HashSet::new();
-
     let mut depth = 1;
 
     while !to_visit.is_empty() {
@@ -96,10 +95,13 @@ fn check_neighbor(a: u8, b: u8) -> bool {
 }
 
 fn solution_1(height_map: &Vec<Vec<u8>>, start: (usize, usize)) -> usize {
+    // Start at (x, y) such that height_map[x][y] == 'S'
     traverse_map(height_map, start, 69, check_neighbor)
 }
 
 fn solution_2(height_map: &Vec<Vec<u8>>, end: (usize, usize)) -> usize {
+    // Start at (x, y) such that height_map[x][y] == 'E'
+    // BFS for 'a'
     traverse_map(height_map, end, 97, |a, b| check_neighbor(b, a))
 }
 
