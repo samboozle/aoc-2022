@@ -11,7 +11,8 @@ defmodule ElixirSolutions do
     # 9 => Day09,
     # 10 => Day10,
     11 => Day11,
-    12 => Day12
+    12 => Day12,
+    13 => Day13
   }
 
   def solve(day) do
