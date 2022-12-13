@@ -32,7 +32,7 @@ defmodule Day13 do
   def solution_2(packets) do
     packets
     |> Enum.reduce([[[2]], [[6]]], fn [a, b], acc -> [a, b | acc] end)
-    |> Enum.sort(fn left, right -> compare_packet_pair(left, right) end)
+    |> Enum.sort(&compare_packet_pair/2)
     |> Enum.with_index()
     |> Enum.reduce(1, fn
       {[[2]], idx}, acc -> acc * (idx + 1)
