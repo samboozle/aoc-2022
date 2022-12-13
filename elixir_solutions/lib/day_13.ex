@@ -32,7 +32,7 @@ defmodule Day13 do
   def solution_2(packets) do
     packets
     |> Enum.reduce([[[2]], [[6]]], fn [a, b], acc -> [a, b | acc] end)
-    |> Enum.sort(fn a, b -> compare_packet_pair(a, b) end)
+    |> Enum.sort(fn left, right -> compare_packet_pair(left, right) end)
     |> Enum.with_index()
     |> Enum.reduce(1, fn
       {[[2]], idx}, acc -> acc * (idx + 1)
@@ -44,22 +44,22 @@ defmodule Day13 do
   defp compare_packet_pair([], _), do: true
   defp compare_packet_pair([_ | _], []), do: false
 
-  defp compare_packet_pair([a | as], [a | bs]),
-    do: compare_packet_pair(as, bs)
+  defp compare_packet_pair([left | ls], [left | rs]),
+    do: compare_packet_pair(ls, rs)
 
-  defp compare_packet_pair([a | _], [b | _])
-       when is_integer(a) and is_integer(b),
-       do: a < b
+  defp compare_packet_pair([left | _], [right | _])
+       when is_integer(left) and is_integer(right),
+       do: left < right
 
-  defp compare_packet_pair([a | _], [b | _])
-       when is_integer(a) and is_list(b),
-       do: compare_packet_pair([a], b)
+  defp compare_packet_pair([left | _], [right | _])
+       when is_integer(left) and is_list(right),
+       do: compare_packet_pair([left], right)
 
-  defp compare_packet_pair([a | _], [b | _])
-       when is_list(a) and is_integer(b),
-       do: compare_packet_pair(a, [b])
+  defp compare_packet_pair([left | _], [right | _])
+       when is_list(left) and is_integer(right),
+       do: compare_packet_pair(left, [right])
 
-  defp compare_packet_pair([a | _], [b | _])
-       when is_list(a) and is_list(b),
-       do: compare_packet_pair(a, b)
+  defp compare_packet_pair([left | _], [right | _])
+       when is_list(left) and is_list(right),
+       do: compare_packet_pair(left, right)
 end
