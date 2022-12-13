@@ -7,7 +7,6 @@ defmodule Day13Test do
   test "Solution 1 with small input" do
     assert Day13.parse_input(@test_input)
            |> Day13.solution_1()
-           |> IO.inspect()
            |> (&(&1 == 13)).()
   end
 
