@@ -17,6 +17,7 @@ fn main() {
         day_10::run,
         day_11::run,
         day_12::run,
+        day_13::run,
     ]
     .iter()
     .enumerate()

@@ -32,15 +32,10 @@ defmodule Day04 do
     end)
   end
 
+  defp acc_unless(false, acc), do: acc + 1
+  defp acc_unless(true, acc), do: acc
+
   defp cmp_rangepairs(rangepairs, fun) do
-    Enum.reduce(
-      rangepairs,
-      0,
-      &if fun.(&1) do
-        &2
-      else
-        &2 + 1
-      end
-    )
+    Enum.reduce(rangepairs, 0, &(fun.(&1) |> acc_unless(&2)))
   end
 end
