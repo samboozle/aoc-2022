@@ -53,6 +53,10 @@ defmodule ElixirSolutionsTest do
   end
 
   test "Day 13" do
-    assert ElixirSolutions.solve(12) == {:ok, {440, 439}}
+    assert ElixirSolutions.solve(13) == {:ok, {5843, 26289}}
+  end
+
+  test "Day 14" do
+    assert ElixirSolutions.solve(14) == {:ok, {832, 27601}}
   end
 end
