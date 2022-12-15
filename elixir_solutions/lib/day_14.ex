@@ -9,7 +9,10 @@ defmodule Day14 do
     |> String.split("\n", trim: true)
     |> Enum.reduce(MapSet.new(), fn line, acc ->
       String.split(line, " -> ")
-      |> Enum.map(fn coord -> String.split(coord, ",") |> Enum.map(&String.to_integer/1) end)
+      |> Enum.map(fn coord ->
+        String.split(coord, ",")
+        |> Enum.map(&String.to_integer/1)
+      end)
       |> Enum.chunk_every(2, 1)
       |> Enum.reduce(acc, fn
         [[a, b], [a, c]], acc ->
