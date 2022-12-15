@@ -58,6 +58,7 @@ defmodule Day15 do
   defp maxish(x, y), do: max(x, y)
 
   # Inspired by (read: stolen from) u/SLiV9
+  # https://github.com/SLiV9/AdventOfCode2022/blob/main/src/bin/day15/main.rs
   def solution_2(coords, limits) do
     [asc, desc] =
       Enum.map([&Kernel.-/2, &Kernel.+/2], fn operator ->
