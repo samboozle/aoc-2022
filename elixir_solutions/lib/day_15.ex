@@ -2,63 +2,110 @@ defmodule Day15 do
   @sensor_beacon ~r/Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)/
 
   def run(path \\ "assets/d15full.txt") do
-    input = parse_input(path)
-    {solution_1(input, 2_000_000), solution_2(input, {0, 4_000_000})}
+    {sensors, beacons} = parse_input(path)
+
+    {
+      solution_1(sensors, beacons, 2_000_000),
+      solution_2(sensors, 0..4_000_000)
+      # old_solution_2(input, 0..4_000_000)
+    }
   end
 
   def parse_input(path) do
     File.read!(path)
     |> String.split("\n", trim: true)
-    |> Enum.reduce({%{}, MapSet.new(), MapSet.new()}, fn line, {sens_beac, sensors, beacons} ->
-      [s_x, s_y, b_x, b_y] =
+    |> Enum.reduce({%{}, MapSet.new()}, fn line, {sensors_beacons, beacons} ->
+      [sx, sy, bx, by] =
         Regex.run(@sensor_beacon, line)
         |> Enum.drop(1)
         |> Enum.map(&String.to_integer/1)
 
       {
-        Map.put(sens_beac, {s_x, s_y}, {b_x, b_y}),
-        MapSet.put(sensors, {s_x, s_y}),
-        MapSet.put(beacons, {b_x, b_y})
+        Map.put(sensors_beacons, {sx, sy}, manhattan({sx, sy}, {bx, by})),
+        MapSet.put(beacons, {bx, by})
       }
     end)
   end
 
-  def solution_1({coords, _, beacons}, row) do
-    {lo, hi} = find_empty_spots(coords, row)
-    hi - lo + 1 - Enum.count(beacons, fn {_, y} -> y == row end)
-  end
+  defp manhattan({a, b}, {x, y}), do: abs(a - x) + abs(b - y)
 
-  def solution_2({coords, _, _}, window = {x, y}) do
-    find_empty_spots_between(coords, window, 11)
-
-    Enum.reduce_while(x..y, nil, fn row, _ ->
-      case find_empty_spots_between(coords, window, row) do
-        {:found, {x, y}} -> {:halt, x * 4_000_000 + y}
-        _ -> {:cont, nil}
-      end
-    end)
+  # For a given row, find the coverage width of all sensors
+  def solution_1(coords, beacons, row) do
+    find_empty_spots(coords, row)
+    # Remove number of known beacons
+    |> (fn width ->
+          width -
+            Enum.count(beacons, fn
+              {_, ^row} -> true
+              _ -> false
+            end)
+        end).()
   end
 
   defp find_empty_spots(coords, row) do
-    Enum.reduce(coords, {nil, nil}, fn {{sx, sy}, {bx, by}}, width = {mn, mx} ->
-      del_x = abs(sx - bx)
-      del_y = abs(sy - by)
-      manhattan = del_x + del_y
-
+    Enum.reduce(coords, {nil, nil}, fn {{sx, sy}, manhattan}, width = {mn, mx} ->
       case manhattan - abs(row - sy) do
         x when x > 0 -> {minish(sx - x, mn), maxish(sx + x, mx)}
         _ -> width
       end
     end)
+    |> (fn {x, y} -> y - x + 1 end).()
   end
 
-  defp find_empty_spots_between(coords, {lo, hi}, row) do
-    Enum.reduce(coords, [], fn {{sx, sy}, {bx, by}}, acc ->
-      # Enum.reduce(coords, [{lo - 2, row}, {hi + 2, row}], fn {{sx, sy}, {bx, by}}, acc ->
-      del_x = abs(sx - bx)
-      del_y = abs(sy - by)
-      manhattan = del_x + del_y
+  defp minish(x, nil), do: x
+  defp minish(x, y), do: min(x, y)
+  defp maxish(x, nil), do: x
+  defp maxish(x, y), do: max(x, y)
 
+  # Inspired by (read: stolen from) u/SLiV9
+  def solution_2(coords, limits) do
+    [asc, desc] =
+      Enum.map([&Kernel.-/2, &Kernel.+/2], fn operator ->
+        Enum.reduce(coords, [], fn {_sensor = {x, y}, manhattan}, acc ->
+          [
+            operator.(x + manhattan + 1, y),
+            operator.(x - manhattan - 1, y)
+            | acc
+          ]
+        end)
+        |> Enum.sort()
+        |> Enum.chunk_every(2, 1)
+        |> Enum.reduce(MapSet.new(), fn
+          [a, a], dupes -> MapSet.put(dupes, a)
+          _, dupes -> dupes
+        end)
+      end)
+
+    for(
+      a <- asc,
+      d <- desc,
+      k = div(d - a, 2),
+      point = {x, y} = {a + k, k},
+      x in limits,
+      y in limits,
+      not Enum.any?(coords, fn {sensor, range} -> manhattan(sensor, point) <= range end),
+      do: point
+    )
+    |> case do
+      [{x, y}] -> x * 4_000_000 + y
+      _ -> :error
+    end
+  end
+
+  # Unoptimized solution looking for windows on a given row
+  def old_solution_2(coords, limits) do
+    Enum.reduce_while(limits, nil, fn row, _ ->
+      case find_empty_spots_between(coords, limits, row) do
+        {:found, {x, y}} -> {:halt, x * 4_000_000 + y}
+        # {:found, {x, y}} -> {:halt, {x, y}}
+        _ -> {:cont, nil}
+      end
+    end)
+  end
+
+  # Performed for each row between 0 and 4_000_000
+  defp find_empty_spots_between(coords, limits, row) do
+    Enum.reduce(coords, [], fn {{sx, sy}, manhattan}, acc ->
       case manhattan - abs(row - sy) do
         x when x > 0 -> [{sx - x, sx + x} | acc]
         _ -> acc
@@ -71,14 +118,9 @@ defmodule Day15 do
 
       curr = {x, _}, prev = {_, b} ->
         cond do
-          x > b && (x - 1) in lo..hi -> {:halt, {:found, {x - 1, row}}}
+          x > b && (x - 1) in limits -> {:halt, {:found, {x - 1, row}}}
           :otherwise -> {:cont, Enum.max_by([prev, curr], fn {_, v} -> v end)}
         end
     end)
   end
-
-  defp minish(x, nil), do: x
-  defp minish(x, y), do: min(x, y)
-  defp maxish(x, nil), do: x
-  defp maxish(x, y), do: max(x, y)
 end

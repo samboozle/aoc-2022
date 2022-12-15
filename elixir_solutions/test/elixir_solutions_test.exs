@@ -59,4 +59,8 @@ defmodule ElixirSolutionsTest do
   test "Day 14" do
     assert ElixirSolutions.solve(14) == {:ok, {832, 27601}}
   end
+
+  test "Day 15" do
+    assert ElixirSolutions.solve(15) == {:ok, {5_461_729, 10_621_647_166_538}}
+  end
 end
