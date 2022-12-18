@@ -52,10 +52,10 @@ defmodule Day15 do
     |> (fn {x, y} -> y - x + 1 end).()
   end
 
-  defp minish(x, nil), do: x
-  defp minish(x, y), do: min(x, y)
-  defp maxish(x, nil), do: x
-  defp maxish(x, y), do: max(x, y)
+  def minish(x, nil), do: x
+  def minish(x, y), do: min(x, y)
+  def maxish(x, nil), do: x
+  def maxish(x, y), do: max(x, y)
 
   # Inspired by (read: stolen from) u/SLiV9
   # https://github.com/SLiV9/AdventOfCode2022/blob/main/src/bin/day15/main.rs

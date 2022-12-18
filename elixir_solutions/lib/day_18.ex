@@ -1,55 +1,39 @@
 defmodule Day18 do
-  def run(path \\ "assets/d18full.txt") do
-    parse_input(path)
-    |> (&{solution_1(&1), solution_2(&1)}).()
-  end
+  def run(path \\ "assets/d18full.txt"),
+    do: parse_input(path) |> (&{solution_1(&1), solution_2(&1)}).()
 
   def parse_input(path) do
-    File.read!(path)
-    |> String.split("\n", trim: true)
-    |> Enum.map(fn line ->
-      String.split(line, ",")
-      |> Enum.map(&String.to_integer/1)
+    for line <- File.read!(path) |> String.split("\n", trim: true),
+        block = String.split(line, ",") |> Enum.map(&String.to_integer/1),
+        reduce: {{nil, nil}, MapSet.new()} do
+      {{min, max}, droplet} ->
+        {{Day15.minish(Enum.min(block) - 1, min), Day15.maxish(Enum.max(block) + 1, max)},
+         MapSet.put(droplet, block)}
+    end
+  end
+
+  def neighbors(block) do
+    for i <- [1, -1],
+        f <- [
+          fn [x, y, z], j -> [x + j, y, z] end,
+          fn [x, y, z], j -> [x, y + j, z] end,
+          fn [x, y, z], j -> [x, y, z + j] end
+        ],
+        into: MapSet.new(),
+        do: f.(block, i)
+  end
+
+  def empties(block, droplet),
+    do: MapSet.filter(neighbors(block), &(not MapSet.member?(droplet, &1)))
+
+  def flood_droplet({%MapSet{map: map}, outside}, _, _) when map_size(map) == 0, do: outside
+
+  def flood_droplet({queue, volume}, droplet, test) do
+    Enum.reduce(queue, {MapSet.new(), volume}, fn block, {que, vol} ->
+      {MapSet.filter(empties(block, droplet), &test.(&1, vol)) |> MapSet.union(que),
+       MapSet.put(vol, block)}
     end)
-    |> Enum.into(MapSet.new())
-  end
-
-  def neighbors([x, y, z]) do
-    [
-      [x + 1, y, z],
-      [x, y + 1, z],
-      [x, y, z + 1],
-      [x - 1, y, z],
-      [x, y - 1, z],
-      [x, y, z - 1]
-    ]
-  end
-
-  def neighbor_split(block, droplet) do
-    neighbors(block)
-    |> Enum.reduce({MapSet.new(), MapSet.new()}, fn neighbor, {real, fake} ->
-      if MapSet.member?(droplet, neighbor) do
-        {MapSet.put(real, neighbor), fake}
-      else
-        {real, MapSet.put(fake, neighbor)}
-      end
-    end)
-  end
-
-  def flood_droplet(_, %MapSet{map: map}, outside, _) when map_size(map) == 0, do: outside
-
-  def flood_droplet(droplet, queue, volume, test) do
-    {queue, volume} =
-      Enum.reduce(queue, {MapSet.new(), volume}, fn block, {que, vol} ->
-        {_, fake} = neighbor_split(block, droplet)
-
-        {MapSet.filter(fake, fn air ->
-           test.(air) && not MapSet.member?(volume, air)
-         end)
-         |> MapSet.union(que), MapSet.put(vol, block)}
-      end)
-
-    flood_droplet(droplet, queue, volume, test)
+    |> flood_droplet(droplet, test)
   end
 
   def count_exposed_sides(blocks, test) do
@@ -62,28 +46,19 @@ defmodule Day18 do
     end)
   end
 
-  def solution_1(droplet) do
-    count_exposed_sides(droplet, &(not MapSet.member?(droplet, &1)))
-  end
+  def solution_1({_, droplet}),
+    do: count_exposed_sides(droplet, &(not MapSet.member?(droplet, &1)))
 
-  def solution_2(droplet) do
-    [lo, _, _, _, _, hi] =
-      for(
-        {x, f} <- [{-1, &Enum.min_by/2}, {1, &Enum.max_by/2}],
-        g <- [&Enum.at(&1, 0), &Enum.at(&1, 1), &Enum.at(&1, 2)],
-        do: g.(f.(droplet, g)) + x
-      )
-      |> Enum.sort()
+  def solution_2({{lo, hi}, droplet}) do
+    outside =
+      flood_droplet({MapSet.new([[lo, lo, lo]]), MapSet.new([])}, droplet, fn block, vol ->
+        Enum.all?(block, &(&1 in lo..hi)) && not MapSet.member?(vol, block)
+      end)
 
-    test = fn block -> Enum.all?(block, &(&1 in lo..hi)) end
-
-    outside = flood_droplet(droplet, MapSet.new([[lo, lo, lo]]), MapSet.new([]), test)
-
-    count_exposed_sides(droplet, fn neighbor ->
-      {_, air} = neighbor_split(neighbor, droplet)
-
-      not MapSet.member?(droplet, neighbor) &&
-        not MapSet.disjoint?(outside, air)
-    end)
+    count_exposed_sides(
+      droplet,
+      &(not MapSet.member?(droplet, &1) &&
+          not MapSet.disjoint?(outside, empties(&1, droplet)))
+    )
   end
 end
