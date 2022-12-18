@@ -11,6 +11,7 @@ defmodule Day18 do
       String.split(line, ",")
       |> Enum.map(&String.to_integer/1)
     end)
+    |> Enum.into(MapSet.new())
   end
 
   def neighbors([x, y, z]) do
@@ -61,19 +62,16 @@ defmodule Day18 do
     end)
   end
 
-  def solution_1(blocks) do
-    droplet = Enum.reduce(blocks, MapSet.new(), &MapSet.put(&2, &1))
-    count_exposed_sides(blocks, &(not MapSet.member?(droplet, &1)))
+  def solution_1(droplet) do
+    count_exposed_sides(droplet, &(not MapSet.member?(droplet, &1)))
   end
 
-  def solution_2(blocks) do
-    droplet = Enum.reduce(blocks, MapSet.new(), &MapSet.put(&2, &1))
-
+  def solution_2(droplet) do
     [lo, _, _, _, _, hi] =
       for(
         {x, f} <- [{-1, &Enum.min_by/2}, {1, &Enum.max_by/2}],
         g <- [&Enum.at(&1, 0), &Enum.at(&1, 1), &Enum.at(&1, 2)],
-        do: g.(f.(blocks, g)) + x
+        do: g.(f.(droplet, g)) + x
       )
       |> Enum.sort()
 
@@ -81,7 +79,7 @@ defmodule Day18 do
 
     outside = flood_droplet(droplet, MapSet.new([[lo, lo, lo]]), MapSet.new([]), test)
 
-    count_exposed_sides(blocks, fn neighbor ->
+    count_exposed_sides(droplet, fn neighbor ->
       {_, air} = neighbor_split(neighbor, droplet)
 
       not MapSet.member?(droplet, neighbor) &&
