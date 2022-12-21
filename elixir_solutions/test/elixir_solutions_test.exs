@@ -76,11 +76,17 @@ defmodule ElixirSolutionsTest do
     assert ElixirSolutions.solve(18) == {:ok, {3_564, 2_106}}
   end
 
+  @tag :pending
   test "Day 19" do
     assert ElixirSolutions.solve(19) == {:ok, {994, 15_960}}
   end
 
+  @tag :pending
   test "Day 20" do
     assert ElixirSolutions.solve(20) == {:ok, {4_267, 6_871_725_358_451}}
+  end
+
+  test "Day 21" do
+    assert ElixirSolutions.solve(21) == {:ok, {168_502_451_381_566, 3_343_167_719_435}}
   end
 end
