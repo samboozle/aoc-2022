@@ -50,8 +50,6 @@ defmodule Day19 do
   def build_and_harvest({_, _, max_geodes}, _, _, limit, limit), do: max_geodes
 
   def build_and_harvest({states, visited, max_geodes}, blueprint, max_costs, minutes, limit) do
-    IO.puts("Assessing #{MapSet.size(states)} states")
-
     Enum.reduce(states, {MapSet.new(), visited, max_geodes}, fn state = {robots, resources},
                                                                 {que, seen, geo} ->
       resources_if_wait = Map.merge(robots, resources, fn _, a, b -> a + b end)
